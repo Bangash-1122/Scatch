@@ -1,18 +1,15 @@
 {
   "name": "scatch",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "A fullStack website in bagshop",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.js"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Ubaid Bangash",
   "license": "ISC",
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "cookie-parser": "^1.4.7",
-    "jsonwebtoken": "^9.0.3",
-    "multer": "^2.0.2"
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }
