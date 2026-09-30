@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Card Background Gradient -->
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F4F8FD"/>
+      <stop offset="100%" stop-color="#E5F0FC"/>
+    </linearGradient>
+
+    <!-- Bag Top Gradient -->
+    <linearGradient id="bagTop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F2C8B0"/>
+      <stop offset="100%" stop-color="#DDA68B"/>
+    </linearGradient>
+
+    <!-- Bag Bottom Gradient -->
+    <linearGradient id="bagBottom" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6F4252"/>
+      <stop offset="100%" stop-color="#4F2C3A"/>
+    </linearGradient>
+
+    <!-- Handle Gradient -->
+    <linearGradient id="handleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#553432"/>
+      <stop offset="50%" stop-color="#734744"/>
+      <stop offset="100%" stop-color="#4B2C2A"/>
+    </linearGradient>
+
+    <!-- Soft Drop Shadow -->
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#709CC7" flood-opacity="0.22"/>
+    </filter>
+
+    <filter id="bagShadow" x="-30%" y="-20%" width="160%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#2D1A23" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Rounded Squircle Card -->
+  <rect x="14" y="14" width="172" height="172" rx="42" fill="url(#cardBg)" stroke="#D4E5F7" stroke-width="1.5" filter="url(#cardShadow)"/>
+
+  <!-- Inner Soft Highlight -->
+  <rect x="15.5" y="15.5" width="169" height="169" rx="40.5" stroke="#FFFFFF" stroke-opacity="0.8" stroke-width="1.5"/>
+
+  <!-- Bag Group with Shadow -->
+  <g filter="url(#bagShadow)">
+    <!-- Bag Handle -->
+    <path d="M 68 92 C 68 52, 132 52, 132 92" fill="none" stroke="url(#handleGrad)" stroke-width="8" stroke-linecap="round"/>
+
+    <!-- Bag Body Base Shape with rounded corners -->
+    <g>
+      <clipPath id="bagClip">
+        <path d="M 58 83 C 58 78, 62 76, 68 76 L 132 76 C 138 76, 142 78, 142 83 L 149 135 C 149 144, 142 149, 134 149 L 66 149 C 58 149, 51 144, 51 135 Z"/>
+      </clipPath>
+
+      <!-- Top Half (Warm Peach / Tan) -->
+      <path d="M 58 83 C 58 78, 62 76, 68 76 L 132 76 C 138 76, 142 78, 142 83 L 146 113 L 54 113 Z" fill="url(#bagTop)"/>
+
+      <!-- Bottom Half (Deep Berry Plum) -->
+      <path d="M 54 113 L 146 113 L 149 135 C 149 144, 142 149, 134 149 L 66 149 C 58 149, 51 144, 51 135 Z" fill="url(#bagBottom)"/>
+
+      <!-- Subtle Seam Line -->
+      <line x1="53" y1="113" x2="147" y2="113" stroke="#462432" stroke-width="1" stroke-opacity="0.4"/>
+      <line x1="53" y1="114" x2="147" y2="114" stroke="#FFF" stroke-width="0.8" stroke-opacity="0.25"/>
+
+      <!-- 3D Gloss Curve on Bottom Half -->
+      <ellipse cx="100" cy="142" rx="42" ry="5" fill="#FFFFFF" fill-opacity="0.08"/>
+    </g>
+
+    <!-- Handle Anchors / Clasps -->
+    <!-- Left Buckle -->
+    <rect x="60" y="87" width="14" height="15" rx="4" fill="#4B2C2A" stroke="#663E3B" stroke-width="1"/>
+    <rect x="62.5" y="89" width="9" height="11" rx="2" fill="#3D201E"/>
+
+    <!-- Right Buckle -->
+    <rect x="126" y="87" width="14" height="15" rx="4" fill="#4B2C2A" stroke="#663E3B" stroke-width="1"/>
+    <rect x="128.5" y="89" width="9" height="11" rx="2" fill="#3D201E"/>
+  </g>
+</svg>

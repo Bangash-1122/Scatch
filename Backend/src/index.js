@@ -1,53 +1,28 @@
 import dotenv from "dotenv";
-import connectDB from "./db/index.js";
-import { app } from "./app.js";
-
 dotenv.config({
     path: "./.env"
 });
 
+import connectDB from "./db/index.js";
+import { app } from "./app.js";
+
+const PORT = process.env.PORT || 8000;
+
 connectDB()
-.then(() => {
-    app.listen(process.env.PORT || 8000, () => {
-        console.log(` Server is running on port ${process.env.PORT}`);
+    .then(() => {
+        app.on("error", (error) => {
+            console.error("Express App Error:", error);
+        });
+
+        app.listen(PORT, () => {
+            console.log(`🚀 Server is running on http://localhost:${PORT}`);
+            console.log(`📡 Healthcheck: http://localhost:${PORT}/api/v1/healthcheck`);
+        });
     })
-})
-.catch((err) => {
-    console.error("MONOGO db connection failed !!! ", err);
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import express from "express";
-// const app = express();
-
-// ( async () => {
-//     try {
-//         await  mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
-//         app.on("error", (err) => {
-//             console.error("ERROR: ", err);
-//             throw err;
-//         })
-
-//         app.listen(process.env.PORT, () => {
-//             console.log(`Server is running on port ${process.env.PORT}`);
-//         })
-
-//     } catch (error) {
-//         console.error("ERROR: ", error);
-//         throw error;
-//     }
-// }) ()
+    .catch((err) => {
+        console.error("❌ MongoDB connection failed!", err);
+        // Start app in offline / demo mode so frontend can still connect or inspect health
+        app.listen(PORT, () => {
+            console.log(`⚠️ Server running without database on http://localhost:${PORT}`);
+        });
+    });
