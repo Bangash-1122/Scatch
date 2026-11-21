@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import type { ReactNode } from 'react'
-import { useStore } from '../context/StoreContext'
+import { useStore } from '@/store/useStore'
 
 interface ProtectedRouteProps {
   children: ReactNode

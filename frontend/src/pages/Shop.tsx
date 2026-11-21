@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { Suspense, useMemo, useState } from 'react'
 import type { Product } from '../types/products'
-import { useStore } from '../context/StoreContext'
+import { useStore } from '@/store/useStore'
+import { LazyProductViewerModal, prefetchProductViewerModal } from '@/components/3d/lazy'
+import { formatPrice } from '@/lib/format'
 import {
   Search,
   Filter,
@@ -10,7 +12,8 @@ import {
   ArrowUpDown,
   Tag,
   CheckCircle2,
-  X
+  X,
+  Box,
 } from 'lucide-react'
 
 export default function Shop() {
@@ -21,44 +24,52 @@ export default function Shop() {
   const [showDiscountedOnly, setShowDiscountedOnly] = useState(false)
   const [stockOnly, setStockOnly] = useState(false)
   const [addedProductId, setAddedProductId] = useState<number | string | null>(null)
+  const [viewerProduct, setViewerProduct] = useState<Product | null>(null)
 
   // Categories list
   const categories = ['ALL', 'Backpack', 'Duffel', 'Tote', 'Pouch']
 
   // Filter products
-  const filteredProducts = products.filter((product) => {
-    // Search query
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
-      const matchName = product.name.toLowerCase().includes(q)
-      const matchDesc = product.description?.toLowerCase().includes(q)
-      const matchCat = product.category.toLowerCase().includes(q)
-      if (!matchName && !matchDesc && !matchCat) return false
-    }
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      // Search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase()
+        const matchName = product.name.toLowerCase().includes(q)
+        const matchDesc = product.description?.toLowerCase().includes(q)
+        const matchCat = product.category.toLowerCase().includes(q)
+        if (!matchName && !matchDesc && !matchCat) return false
+      }
 
-    // Category
-    if (selectedCategory !== 'ALL' && product.category.toLowerCase() !== selectedCategory.toLowerCase()) {
-      return false
-    }
+      // Category
+      if (
+        selectedCategory !== 'ALL' &&
+        product.category.toLowerCase() !== selectedCategory.toLowerCase()
+      ) {
+        return false
+      }
 
-    // Discount
-    if (showDiscountedOnly && !product.discountPercent) return false
+      // Discount
+      if (showDiscountedOnly && !product.discountPercent) return false
 
-    // Stock
-    if (stockOnly && product.stock === 0) return false
+      // Stock
+      if (stockOnly && product.stock === 0) return false
 
-    return true
-  })
+      return true
+    })
+  }, [products, searchQuery, selectedCategory, showDiscountedOnly, stockOnly])
 
   // Sort products
-  const sortedProducts = [...filteredProducts].sort((a: Product, b: Product) => {
-    if (sortBy === 'price-low') return a.price - b.price
-    if (sortBy === 'price-high') return b.price - a.price
-    if (sortBy === 'name') return a.name.localeCompare(b.name)
-    if (sortBy === 'newest') return Number(b.id) - Number(a.id)
-    // Popular: high stock/sales
-    return b.stock - a.stock
-  })
+  const sortedProducts = useMemo(() => {
+    return [...filteredProducts].sort((a: Product, b: Product) => {
+      if (sortBy === 'price-low') return a.price - b.price
+      if (sortBy === 'price-high') return b.price - a.price
+      if (sortBy === 'name') return a.name.localeCompare(b.name)
+      if (sortBy === 'newest') return Number(b.id) - Number(a.id)
+      // Popular: high stock/sales
+      return b.stock - a.stock
+    })
+  }, [filteredProducts, sortBy])
 
   const handleQuickAdd = (product: Product) => {
     addToCart(product)
@@ -269,6 +280,18 @@ export default function Shop() {
                       alt={product.name}
                       className="h-full w-full object-contain group-hover:scale-110 transition-transform duration-300 filter drop-shadow-xs z-10"
                     />
+
+                    <button
+                      type="button"
+                      onClick={() => setViewerProduct(product)}
+                      onPointerEnter={prefetchProductViewerModal}
+                      onFocus={prefetchProductViewerModal}
+                      className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1.5 rounded-xl bg-white/90 px-2.5 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-gray-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-scatch-700 hover:shadow-md focus-visible:ring-2 focus-visible:ring-scatch-500"
+                      aria-label={`View ${product.name} in 3D`}
+                    >
+                      <Box className="h-3.5 w-3.5" />
+                      3D
+                    </button>
                   </div>
 
                   {/* Panel Details Section */}
@@ -301,7 +324,7 @@ export default function Shop() {
                       Price
                     </span>
                     <span className="text-2xl font-extrabold text-gray-900 leading-tight">
-                      ₹ {product.price}
+                      {formatPrice(product.price)}
                     </span>
                   </div>
 
@@ -335,6 +358,17 @@ export default function Shop() {
             )
           })}
         </div>
+      )}
+
+      {viewerProduct && (
+        <Suspense fallback={null}>
+          <LazyProductViewerModal
+            product={viewerProduct}
+            open
+            onClose={() => setViewerProduct(null)}
+            onAddToCart={handleQuickAdd}
+          />
+        </Suspense>
       )}
     </div>
   )

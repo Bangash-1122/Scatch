@@ -1,7 +1,14 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useStore } from '../context/StoreContext'
+import { useStore } from '@/store/useStore'
+import { use3DSupport } from '@/hooks/use3DSupport'
+import { useInView } from '@/hooks/useInView'
+import { LazyProductViewer } from '@/components/3d/lazy'
+import { SceneFallback } from '@/components/3d/SceneFallback'
+import { bagColorsFromProduct } from '@/components/3d/productColors'
+import { Button, Spinner } from '@/components/ui'
+import { formatPrice } from '@/lib/format'
 import {
   ArrowRight,
   ShieldCheck,
@@ -14,7 +21,10 @@ import {
   CheckCircle2,
   Star,
   Lock,
-  ArrowUpRight
+  ArrowUpRight,
+  Box,
+  ShoppingBag,
+  MousePointer2,
 } from 'lucide-react'
 
 export default function Home() {
@@ -28,6 +38,12 @@ export default function Home() {
   const [authLoading, setAuthLoading] = useState(false)
   const { user, login, register, products, addToCart } = useStore()
   const navigate = useNavigate()
+
+  const support = use3DSupport()
+  const [studioRef, studioInView] = useInView<HTMLDivElement>()
+  const [studioProductId, setStudioProductId] = useState<string | number | null>(null)
+  const studioProduct =
+    products.find((product) => String(product.id) === String(studioProductId)) ?? products[0] ?? null
 
   const handleAuthSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -302,6 +318,145 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* INTERACTIVE 3D STUDIO */}
+      {studioProduct && (
+        <section className="px-4 md:px-12 pb-20 max-w-[1400px] mx-auto">
+          <div
+            ref={studioRef}
+            className="relative overflow-hidden rounded-[2.5rem] border border-gray-200/80 bg-gradient-to-br from-white via-scatch-50/60 to-white shadow-soft"
+          >
+            <div className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-scatch-300/25 blur-3xl" />
+            <div className="pointer-events-none absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-indigo-300/20 blur-3xl" />
+
+            <div className="relative grid grid-cols-1 items-center gap-8 p-6 md:p-10 lg:grid-cols-12">
+              <div className="space-y-5 lg:col-span-5">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-scatch-700 shadow-2xs ring-1 ring-scatch-200/70">
+                  <Box className="h-3.5 w-3.5" />
+                  Interactive 3D Studio
+                </span>
+
+                <h2 className="text-3xl font-extrabold leading-[1.05] tracking-tight text-gray-900 md:text-5xl">
+                  Spin it. Study it.{' '}
+                  <span className="inline-block whitespace-nowrap bg-gradient-to-r from-scatch-600 via-scatch-500 to-indigo-600 bg-clip-text text-transparent">
+                    Own it.
+                  </span>
+                </h2>
+
+                <p className="max-w-md text-sm leading-relaxed text-gray-600 md:text-base">
+                  Every bag is rebuilt as a real-time 3D model with live materials and studio
+                  lighting. Drag to orbit the hardware, zoom into the stitching, and pick your
+                  favourite colourway before it ships.
+                </p>
+
+                <div className="flex flex-wrap gap-2" role="group" aria-label="Choose a bag to preview in 3D">
+                  {products.slice(0, 6).map((product) => {
+                    const active = String(product.id) === String(studioProduct.id)
+                    return (
+                      <button
+                        key={product.id}
+                        type="button"
+                        onClick={() => setStudioProductId(product.id)}
+                        aria-pressed={active}
+                        className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all duration-200 ${
+                          active
+                            ? 'bg-scatch-600 text-white shadow-md shadow-scatch-600/25'
+                            : 'bg-white/80 text-gray-600 ring-1 ring-gray-200 hover:bg-white hover:text-gray-900'
+                        }`}
+                      >
+                        {product.name}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                <dl className="grid grid-cols-3 gap-3 text-left">
+                  {[
+                    { label: 'Materials', value: 'Full-grain leather' },
+                    { label: 'Hardware', value: 'Brushed brass' },
+                    { label: 'Warranty', value: '1 year' },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-2xl bg-white/70 p-3 ring-1 ring-gray-100">
+                      <dt className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                        {item.label}
+                      </dt>
+                      <dd className="mt-0.5 text-[11px] font-bold leading-tight text-gray-800">
+                        {item.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+
+                <div className="flex flex-wrap items-center gap-4 pt-1">
+                  <div>
+                    <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                      {studioProduct.category}
+                    </span>
+                    <span className="text-3xl font-extrabold tracking-tight text-gray-900">
+                      {formatPrice(studioProduct.price)}
+                    </span>
+                  </div>
+                  <Button
+                    size="md"
+                    leftIcon={<ShoppingBag className="h-4 w-4" />}
+                    disabled={studioProduct.stock <= 0}
+                    onClick={() => addToCart(studioProduct)}
+                  >
+                    {studioProduct.stock > 0 ? 'Add to cart' : 'Out of stock'}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="lg:col-span-7">
+                <div
+                  className="relative h-[340px] overflow-hidden rounded-3xl border border-white/70 shadow-medium md:h-[470px]"
+                  style={{ backgroundColor: studioProduct.bgColor || '#f3f4f6' }}
+                >
+                  <div
+                    className="pointer-events-none absolute inset-0 opacity-[0.12]"
+                    style={{
+                      backgroundImage:
+                        'radial-gradient(circle at 1px 1px, #111827 1px, transparent 0)',
+                      backgroundSize: '22px 22px',
+                    }}
+                  />
+
+                  {studioInView && support.enabled ? (
+                    <Suspense
+                      fallback={
+                        <div className="flex h-full items-center justify-center">
+                          <Spinner size="lg" label="Loading interactive 3D studio" />
+                        </div>
+                      }
+                    >
+                      <LazyProductViewer
+                        colors={bagColorsFromProduct(studioProduct)}
+                        straps={studioProduct.category !== 'Pouch'}
+                      />
+                    </Suspense>
+                  ) : (
+                    <SceneFallback
+                      image={studioProduct.image}
+                      alt={`${studioProduct.name} preview`}
+                      note={support.reason === 'reduced-motion' ? 'Motion reduced' : 'Static preview'}
+                      className="p-8"
+                    />
+                  )}
+
+                  <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/85 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-gray-700 shadow-sm backdrop-blur">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                    {support.enabled && studioInView ? 'Live 3D' : 'Preview'}
+                  </span>
+                </div>
+                <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-medium text-gray-500">
+                  <MousePointer2 className="h-3.5 w-3.5" />
+                  Drag to orbit · scroll to zoom · release to auto-spin
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* MERN STACK & COMPLETE WEBSITE INFORMATION SECTION */}
       <section className="bg-white border-y border-gray-200 py-16 px-4 md:px-12">

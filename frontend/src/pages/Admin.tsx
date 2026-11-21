@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useStore } from '../context/StoreContext'
+import { useStore } from '@/store/useStore'
 import type { Order } from '../types/products'
 import {
   TrendingUp,
@@ -518,16 +518,16 @@ export default function Admin() {
                 >
                   <path
                     d="M 40,150 
-                       C 80,140 100,105 130,100
-                       C 160,95 190,130 220,125
-                       C 250,120 280,128 310,120
-                       C 340,110 370,60 400,55
-                       C 430,50 460,110 490,100
-                       C 520,90 550,85 580,80
-                       C 610,75 640,95 670,90
-                       C 700,85 730,75 760,70
-                       C 790,65 820,55 850,50
-                       C 880,45 910,25 940,30"
+                        C 80,140 100,105 130,100
+                        C 160,95 190,130 220,125
+                        C 250,120 280,128 310,120
+                        C 340,110 370,60 400,55
+                        C 430,50 460,110 490,100
+                        C 520,90 550,85 580,80
+                        C 610,75 640,95 670,90
+                        C 700,85 730,75 760,70
+                        C 790,65 820,55 850,50
+                        C 880,45 910,25 940,30"
                     fill="none"
                     stroke="#2563eb"
                     strokeWidth="3.5"

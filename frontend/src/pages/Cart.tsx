@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { useStore } from '../context/StoreContext'
+import { useStore } from '@/store/useStore'
 import {
   ArrowRight,
   ShieldCheck,

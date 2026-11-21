@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# Scatch — Storefront (React 19 + Vite + Three.js)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interactive luxury-bag storefront with a real-time 3D product studio, Zustand state,
+strict TypeScript, Tailwind CSS v4 design tokens and a Vitest suite.
 
-Currently, two official plugins are available:
+## Scripts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Vite dev server on `http://localhost:5173` (proxies `/api` to the backend on `:8000`) |
+| `npm run build` | Type-checks both projects, then builds a compressed production bundle |
+| `npm run typecheck` | `tsc --noEmit` for the app and the build configs |
+| `npm run lint` | ESLint (flat config, React hooks rules) |
+| `npm test` | Vitest run (jsdom + Testing Library) |
+| `npm run test:coverage` | Vitest with V8 coverage |
+| `npm run preview` | Serve the production build locally |
 
-## React Compiler
+## Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+  api/                 # (reserved) typed HTTP helpers
+  components/
+    3d/                # Three.js surfaces + capability gates
+      BagMesh.tsx      #   procedural bag: materials, straps, brass hardware, animation
+      ProductViewer.tsx#   interactive viewer (orbit, shadows, sparkles, quality tiers)
+      HeroScene.tsx    #   ambient hero scene
+      ProductViewerModal.tsx  # full 3D product dialog
+      SceneFallback.tsx#   static image fallback (no WebGL / reduced motion)
+      lazy.ts          #   code-split entry points + intent prefetch
+    ui/                # design-system primitives (Button, Badge, Modal, Spinner, …)
+    Header/ Footer/ Layout/
+  data/products.ts     # demo catalog used until the API responds
+  hooks/               # use3DSupport, useDevicePerformance, useReducedMotion, useInView
+  lib/                 # cn(), price formatting, color math
+  pages/               # route-level screens
+  routes/              # lazy routes + ProtectedRoute
+  store/useStore.ts    # Zustand store (persisted: user, cart, products, orders)
+  styles/design-tokens.css
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 3D system
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **No external model assets required.** `BagMesh` is built from primitives and recolours
+  from each product's `bgColor` / `panelColor`, so every catalog item has a 3D preview.
+- **Progressive enhancement.** `use3DSupport()` checks WebGL, CPU/GPU tier and
+  `prefers-reduced-motion`. Unsupported devices get `SceneFallback` (the product photo).
+- **Quality tiers.** High tier enables shadows, environment light formers and 2× DPR;
+  medium trims particles and DPR; low never mounts a canvas.
+- **Bundle isolation.** Three.js lives in a lazy chunk (`vendor-three`, ~280 kB gzip)
+  that downloads only when a 3D surface mounts or the shopper hovers a “3D” button.
+- **Scene lifecycle.** Geometries/materials are disposed on unmount; `ContactShadows`
+  freezes after the first frame on non-high tiers.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+To swap in a photoreal asset later, add `modelUrl` to a product and render a
+`useGLTF` model inside `ProductViewer`; the fallback and capability plumbing already
+handle the rest.
+
+## Environment
+
+Create `.env.local` when the API is not on the default origin:
+
 ```
+VITE_API_BASE_URL=http://localhost:8000/api/v1
+```
+
+The store falls back to local demo data and offline auth only when the backend is
+unreachable. **Note:** the demo seeds a logged-in admin so the dashboard can be
+reviewed; remove `DEMO_ADMIN` in `src/store/useStore.ts` before shipping.

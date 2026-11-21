@@ -1,10 +1,34 @@
 @import "tailwindcss";
+@import "./styles/design-tokens.css";
+
+@theme {
+  --color-scatch-50: #f6f9fe;
+  --color-scatch-100: #e7f1fd;
+  --color-scatch-200: #d2e4f8;
+  --color-scatch-300: #a8c8ed;
+  --color-scatch-400: #7aaae0;
+  --color-scatch-500: #568fd2;
+  --color-scatch-600: #3d77c0;
+  --color-scatch-700: #2e5e9b;
+  --color-scatch-800: #234673;
+  --color-scatch-900: #1b3559;
+
+  --font-display: "Cal Sans", "Inter Variable", sans-serif;
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+
+  --shadow-soft: 0 4px 20px -4px rgb(110 155 205 / 0.15);
+  --shadow-medium: 0 10px 40px -8px rgb(110 155 205 / 0.2);
+  --shadow-strong: 0 20px 60px -12px rgb(110 155 205 / 0.25);
+  --shadow-glow: 0 0 40px -5px rgb(56 189 248 / 0.4);
+}
 
 @layer utilities {
-  /* Soft Icy-Blue Card matching User's Provided Image */
   .soft-blue-card {
-    background: linear-gradient(135deg, #F6F9FE 0%, #E7F1FD 100%);
-    border: 1.5px solid #D2E4F8;
+    background: linear-gradient(135deg, #f6f9fe 0%, #e7f1fd 100%);
+    border: 1.5px solid #d2e4f8;
     box-shadow: 0 6px 20px -3px rgba(110, 155, 205, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
@@ -14,10 +38,9 @@
   .soft-blue-card-hover:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px -3px rgba(90, 140, 195, 0.28), inset 0 1px 0 rgba(255, 255, 255, 1);
-    border-color: #B9D6F5;
+    border-color: #b9d6f5;
   }
 
-  /* Glassmorphism */
   .glass-card {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
@@ -25,50 +48,75 @@
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06);
   }
 
-  /* Micro-interactions */
   .hover-elevate {
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition:
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .hover-elevate:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.08);
   }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-pulse-gentle {
+    animation: pulseGentle 3s ease-in-out infinite;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fade-in-down {
+    animation: fadeInDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }
 
-/* Keyframe Animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-8px);
   }
 }
 
-@keyframes gentlePulse {
-  0%, 100% {
+@keyframes pulseGentle {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
   50% {
-    opacity: 0.85;
-    transform: scale(1.03);
-  }
-}
-
-@keyframes shimmerGlow {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
+    opacity: 0.8;
+    transform: scale(1.02);
   }
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -76,16 +124,48 @@
   }
 }
 
-.animate-float {
-  animation: float 4s ease-in-out infinite;
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.animate-pulse-gentle {
-  animation: gentlePulse 3s ease-in-out infinite;
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Custom Scrollbar */
@@ -102,4 +182,31 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #93c5fd;
+}
+
+/* Accessibility: honor the user's motion preference for all CSS animation */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* The dialog container is focused programmatically; don't ring the whole modal. */
+[role='dialog']:focus-visible {
+  outline: none;
+}
+
+::selection {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
 }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import { useStore } from '../context/StoreContext'
+import { useStore } from '@/store/useStore'
 
 export default function CreateProduct() {
   const { addProduct } = useStore()

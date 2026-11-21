@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useStore } from '../context/StoreContext'
+import { useStore } from '@/store/useStore'
 import { ShieldCheck, Lock, ArrowRight, Sparkles } from 'lucide-react'
 
 export default function OwnerLogin() {

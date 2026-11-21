@@ -8,9 +8,13 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+# Build output
 dist
 dist-ssr
 *.local
+
+# Local verification screenshots
+verification
 
 # Editor directories and files
 .vscode/*

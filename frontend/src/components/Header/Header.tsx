@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useStore } from '../../context/StoreContext'
+import { useStore, selectCartCount } from '@/store/useStore'
 import { LogOut, ShoppingBag, LayoutDashboard, PlusCircle, ShieldCheck, ChevronDown, UserCircle } from 'lucide-react'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const { cartItems, user, logout } = useStore()
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+  const { user, logout } = useStore()
+  const cartCount = useStore(selectCartCount)
   const profileRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
